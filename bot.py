@@ -11,24 +11,28 @@ signup = config['signup']
 refr = config['ref']
 admins = config['admins']
 data = []
-dash_key = [['Twitter','Discord','ETH address'],['Referral Link','Referred'],['Balance','Details']]
+dash_key = [['Twitter','Reddit','BSC address'],['Referral Link','Referred'],['Balance','Details']]
 admin_key = [['Users','Get List']]
 
-webhook_url = 'Your Webook'
+webhook_url = 'http://localhost:8433'
 PORT = int(os.environ.get('PORT','8443'))
 
+def set_data_safe(user, key, value, default):
+    if key not in data.keys():
+        data[key] = {}
+    if user not in data[key].keys():
+        data[key][user] = default
+    data[key][user] = value
 
 def start(update, context):
     if update.message.chat.type == 'private':
         user = str(update.message.chat.username)
         if user not in data['users']:
             data['users'].append(user)
-            if user not in data['twitter']:
-                data['twitter'][user] = ""
-            if user not in data['eth']:
-                data['eth'][user] = ""
-            if user not in data['discord']:
-                data['discord'][user] = ""
+            set_data_safe(user, 'twitter', "", "")
+            set_data_safe(user, 'reddit', "", "")
+            set_data_safe(user, 'bsc', "", "")
+
             ref_id = update.message.text.split()
             if len(ref_id) > 1:
                 data['ref'][user] = ref_id[1]
@@ -43,11 +47,11 @@ def start(update, context):
             data['process'][user] = "twitter"
             json.dump(data,open('users.json','w'))
             msg = config['intro']
-            started_msg = 'TWITTER MESSAGE'
+            started_msg = config['twitter_message']
             update.message.reply_text(msg)
             update.message.reply_text(started_msg)
         else:
-            welcome_msg = "DASHBOARD MESSAGE"
+            welcome_msg = config['dashboard_message']
             reply_markup = ReplyKeyboardMarkup(dash_key,resize_keyboard=True)
             update.message.reply_text(welcome_msg,reply_markup=reply_markup)
 
@@ -63,19 +67,19 @@ def twitter(update, context):
         reply_markup = ReplyKeyboardMarkup(dash_key,resize_keyboard=True)
         update.message.reply_text(msg,reply_markup=reply_markup)
 
-def eth(update, context):
+def bsc(update, context):
     if update.message.chat.type == 'private':
         user = str(update.message.chat.username)
-        eth_addr = data['eth'][user]
-        msg = 'Your eth address is {}'.format(eth_addr)
+        bsc_addr = data['bsc'][user]
+        msg = 'Your bsc address is {}'.format(bsc_addr)
         reply_markup = ReplyKeyboardMarkup(dash_key,resize_keyboard=True)
         update.message.reply_text(msg,reply_markup=reply_markup)
 
-def discord(update, context):
+def reddit(update, context):
     if update.message.chat.type == 'private':
         user = str(update.message.chat.username)
-        du = data['discord'][user]
-        msg = 'Your Discord username is {}'.format(du)
+        du = data['reddit'][user]
+        msg = 'Your Reddit username is {}'.format(du)
         reply_markup = ReplyKeyboardMarkup(dash_key,resize_keyboard=True)
         update.message.reply_text(msg,reply_markup=reply_markup)
 
@@ -92,19 +96,19 @@ def extra(update, context):
         user = str(update.message.chat.username)
         if data["process"][user] == 'twitter':
             data['twitter'][user] = update.message.text
-            data['process'][user] = 'discord'
+            data['process'][user] = 'reddit'
             json.dump(data,open('users.json','w'))
-            update.message.reply_text("DISCORD MESSAGE")
-        elif data["process"][user] == 'discord':
-            data['discord'][user] = update.message.text
-            data['process'][user] = "eth"
+            update.message.reply_text(config['reddit_message'])
+        elif data["process"][user] == 'reddit':
+            data['reddit'][user] = update.message.text
+            data['process'][user] = "bsc"
             json.dump(data,open('users.json','w'))
-            update.message.reply_text("WALLET MESSAGE")
-        elif data["process"][user] == 'eth':
-            data['eth'][user] = update.message.text
+            update.message.reply_text(config['bsc_message'])
+        elif data["process"][user] == 'bsc':
+            data['bsc'][user] = update.message.text
             data['process'][user] = "finished"
             json.dump(data,open('users.json','w'))
-            msg = "DASHBOARD MESSAGE!"
+            msg = config['dashboard_message']
             reply_markup = ReplyKeyboardMarkup(dash_key,resize_keyboard=True)
             update.message.reply_text(msg,reply_markup=reply_markup)
         else:
@@ -144,13 +148,13 @@ def get_file(update, context):
         user = str(update.message.chat.username)
         if user in admins:
             f = open('users.csv','w')
-            f.write("id,username,twitter username,eth address,discord,no. of persons referred,referred by\n")
+            f.write("id,username,twitter username,bsc address,reddit,no. of persons referred,referred by\n")
             for u in data['users']:
                 i = str(data['id'][u])
                 refrrd = 0
                 if i in data['referred']:
                     refrrd = data['referred'][i]
-                d = "{},{},{},{},{},{},{}\n".format(i,u,data['twitter'][u],data['eth'][u],data['discord'][u],refrrd,data['ref'][u])
+                d = "{},{},{},{},{},{},{}\n".format(i,u,data['twitter'][u],data['bsc'][u],data['reddit'][u],refrrd,data['ref'][u])
                 f.write(d)
             f.close()
             bot = Bot(TOKEN)
@@ -164,7 +168,7 @@ def bal(update, context):
         if i in data['referred']:
             referred = data['referred'][i]
         bal = signup + refr * referred
-        msg = "You have {} tokens".format(bal)
+        msg = "You have {} points".format(bal)
         reply_markup = ReplyKeyboardMarkup(dash_key,resize_keyboard=True)
         update.message.reply_text(msg,reply_markup=reply_markup)
 
@@ -181,8 +185,8 @@ if __name__ == '__main__':
     dp.add_handler(CommandHandler("start",start))
     dp.add_handler(CommandHandler("admin",admin))
     dp.add_handler(RegexHandler("^Twitter$",twitter))
-    dp.add_handler(RegexHandler("^ETH address$",eth))
-    dp.add_handler(RegexHandler("^Discord$",discord))
+    dp.add_handler(RegexHandler("^BSC address$",bsc))
+    dp.add_handler(RegexHandler("^Reddit$",reddit))
     dp.add_handler(RegexHandler("^Referral Link$",link))
     dp.add_handler(RegexHandler("^Referred$",ref))
     dp.add_handler(RegexHandler("^Users$",users))

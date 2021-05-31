@@ -1,8 +1,12 @@
 {
-    "token" : "YOUR BOT TOKEN",
-    "admins" : ["ADMIN USERNAMES (ARRAY)"],
-    "intro" : "YOUR INTRO HERE",
-    "botname" :"YOUR BOT NAME HERE",
-    "signup" : SIGNUP BONUS (NUMBER),
-    "ref" : REFERRAL BONUS (NUMBER)
+    "token" : "1701834359:AAFgpJspbksmeVsNwKtDJ9KFmhDYQaVNRb8",
+    "admins" : ["tsoy_jyf", "wormoon_god", "nfedosenko"],
+    "intro" : "WORMOON Shilling Airdrop. We will select 3 winners with most referals and distribute WORMOON Tokens.",
+    "botname" :"wormoon_airdrop_bot",
+    "signup" : 1,
+    "ref" : 1,
+    "dashboard_message": "Welcome to WORMOON Airdrop Dashboard!",
+    "twitter_message": "Please, enter your twitter account:",
+    "reddit_message": "Please, enter your reddit account:",
+    "bsc_message": "Please, enter your BSC address:"
 }

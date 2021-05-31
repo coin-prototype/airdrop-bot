@@ -1,11 +1,1 @@
-{
-    "users": [],
-    "twitter": {},
-    "discord" : {},
-    "eth": {},
-    "id": {},
-    "ref" : {},
-    "total": 1000 ,
-    "process" : {},
-    "referred" : {}
-}
+{"users": ["wormoon_god", "tsoy_jyf", "nfedosenko"], "twitter": {"wormoon_god": "sosinah", "tsoy_jyf": "sosinah", "nfedosenko": "wormooncoin"}, "discord": {}, "bsc": {"wormoon_god": "0xFB50261078614ECD1b628f7868030DEC78905b45", "tsoy_jyf": "", "nfedosenko": ""}, "id": {"wormoon_god": 1001, "tsoy_jyf": 1002, "nfedosenko": 1003}, "ref": {"wormoon_god": 0, "tsoy_jyf": "1001", "nfedosenko": "1001"}, "total": 1003, "process": {"wormoon_god": "finished", "tsoy_jyf": "reddit", "nfedosenko": "reddit"}, "referred": {"1001": 2}, "reddit": {"wormoon_god": "https://twitter.com/wormooncoin", "tsoy_jyf": "", "nfedosenko": ""}}
